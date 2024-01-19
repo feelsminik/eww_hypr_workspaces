@@ -1,3 +1,4 @@
+#include <cjson/cJSON.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,4 +19,22 @@ bool is_changing_workspace(char* eventline) {
              0 ||
          strncmp("workspace", eventline, strlen("workspace")) == 0 ||
          strncmp("focusedmon", eventline, strlen("focusedmon")) == 0;
+}
+
+cJSON* get_hypr_monitors() {
+  FILE* hypr_monitors = popen("/bin/hyprctl monitors -j", "r");
+  size_t buffer_size = 2048;
+  char monitors[buffer_size];
+
+  if (hypr_monitors == NULL) {
+    perror("Reading hyprctl monitors failed");
+    exit(EXIT_FAILURE);
+  } else {
+    size_t bytes_read =
+        fread(monitors, sizeof(char), buffer_size, hypr_monitors);
+    monitors[bytes_read++] = '\0';
+  }
+  pclose(hypr_monitors);
+  struct cJSON* monitors_j = cJSON_Parse(monitors);
+  return monitors_j;
 }

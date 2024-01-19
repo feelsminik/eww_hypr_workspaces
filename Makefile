@@ -11,6 +11,7 @@ CFLAGS=-Og               \
 	   -std=c99          \
 	   -D_DEFAULT_SOURCE \
 	   -Iinclude         \
+	   -lcjson           \
 
 SOURCES = $(wildcard $(SRC_DIR)/*.c)
 OBJECTS = $(patsubst $(SRC_DIR)/%.c, $(BUILD_DIR)/%.o, $(SOURCES))
