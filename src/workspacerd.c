@@ -7,9 +7,9 @@
 #include "../include/_daemon.h"
 #include "../include/_debug.h"
 #include "../include/_hypr.h"
+#include "../include/_hypr_structs.h"
+#include "../include/_macros.h"
 #include "../include/_socket.h"
-
-#define MAX_BUFFER_SIZE 2048
 
 int main(void) {
   char hypr_socket_buffer[MAX_BUFFER_SIZE];
@@ -22,21 +22,13 @@ int main(void) {
     // Recieve socket bytes
     read_from_socket(sock_fd, hypr_socket_buffer, MAX_BUFFER_SIZE);
 
-    if (is_changing_workspace(hypr_socket_buffer) == true) {
-      struct cJSON *monitors = get_hypr_monitors();
-      int num_of_monitors = cJSON_GetArraySize(monitors);
-      int monitor_ids[3] = {0};
-      for (int i = 0; i < num_of_monitors; i++) {
-        struct cJSON *monitor = cJSON_GetArrayItem(monitors, i);
-        struct cJSON *id = cJSON_GetObjectItem(monitor, "id");
-        monitor_ids[i] = cJSON_GetNumberValue(id);
-      }
-      printIntArray(monitor_ids);
-      cJSON_Delete(monitors);
+    // Maybe update eww show_workspace variable - see go impl
 
-      // Maybe update eww show_workspace variable - see go impl
-      printf("%s", hypr_socket_buffer);
-      // Continue with popen()
+    if (is_changing_workspace(hypr_socket_buffer) == true) {
+      workspaceTile workspace_tiles[MAX_NUM_OF_WORKSPACES + 1] = {{}};
+      get_hypr_workspaces(workspace_tiles);
+      printWorkspaceTiles(workspace_tiles);
+      printf("======\n");
     }
 
     // Empty buffer for new retrieval
