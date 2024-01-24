@@ -14,8 +14,9 @@ void printIntArray(int* given_array) {
 }
 
 void printWorkspaceTiles(workspaceTile* tiles) {
-  for (size_t i = 0; i <= MAX_NUM_OF_WORKSPACES; i++) {
+  for (size_t i = 0; i < MAX_NUM_OF_WORKSPACES; i++) {
     workspaceTile tile = tiles[i];
-    printf("[%d, %s, %s]\n", tile.index, tile.icon, tile.css_class);
+    printf("[%d, %d, %s, %s]\n", tile.index, tile.monitor_id, tile.icon,
+           tile.css_class);
   }
 }

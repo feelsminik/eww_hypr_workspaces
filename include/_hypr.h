@@ -11,6 +11,6 @@ char* hypr_socket_path(char*, size_t);
 
 bool is_changing_workspace(char*); 
 
-void get_hypr_workspaces(workspaceTile*);
+void get_hypr_workspaces(workspaceTile*, size_t*);
 
 #endif //__hypr__h

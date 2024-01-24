@@ -3,6 +3,7 @@
 
 struct workspaceTile {
   int index;
+  int monitor_id;
   char icon[8];
   char css_class[32];
 };

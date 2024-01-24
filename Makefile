@@ -4,8 +4,7 @@ SRC_DIR = ./src
 PROJ_NAME = workspacerd
 
 
-CFLAGS=-Og               \
-	   -g                \
+CFLAGS=-g                \
 	   -Wall             \
 	   -Werror           \
 	   -std=c99          \
@@ -25,5 +24,5 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
 
 .PHONY: clean
 clean:
-	rm -rf $(BUILD_DIR)/*.o $(PROJ_NAME)
+	rm -rf $(BUILD_DIR)/*.o $(PROJ_NAME) $(BUILD_DIR)/$(PROJ_NAME)
 
