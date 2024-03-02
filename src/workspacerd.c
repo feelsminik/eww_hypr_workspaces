@@ -25,7 +25,7 @@ int main(void) {
     // Maybe update eww show_workspace variable - see go impl
 
     if (is_changing_workspace(hypr_socket_buffer) == true) {
-      workspaceTile workspace_tiles[MAX_NUM_OF_WORKSPACES] = {{}};
+      workspaceTile workspace_tiles[MAX_NUM_OF_WORKSPACES + 1] = {{}};
       size_t count_workspaces_per_monitor[MAX_NUM_OF_WORKSPACES] = {0};
       get_hypr_workspaces(workspace_tiles, count_workspaces_per_monitor);
 
@@ -67,18 +67,33 @@ int main(void) {
       memcpy(&workspace_tiles[left_added + 1], &right_monitor_tiles[0],
              right_added * sizeof(workspaceTile));
 
-      printf("[");
-      for (size_t i = 0; i < MAX_NUM_OF_WORKSPACES; i++) {
+      cJSON *workspace_infos = cJSON_CreateArray();
+      for (size_t i = 0; i <= MAX_NUM_OF_WORKSPACES; i++) {
         if (workspace_tiles[i].index != 0) {
-          printf("{");
-          printf("Index: %d\n", workspace_tiles[i].index);
-          printf("MonitorId: %d\n", workspace_tiles[i].monitor_id);
-          printf("Icon: %s\n", workspace_tiles[i].icon);
-          printf("CSS_Class: %s\n", workspace_tiles[i].css_class);
-          printf("}\n");
+          cJSON *workspace_info = cJSON_CreateObject();
+          cJSON *index = cJSON_CreateNumber(workspace_tiles[i].index);
+          cJSON *monitor_id = cJSON_CreateNumber(workspace_tiles[i].monitor_id);
+          cJSON *icon = cJSON_CreateString(workspace_tiles[i].icon);
+          cJSON *css = cJSON_CreateString(workspace_tiles[i].css_class);
+
+          cJSON_AddItemToObject(workspace_info, "index", index);
+          cJSON_AddItemToObject(workspace_info, "monitor_id", monitor_id);
+          cJSON_AddItemToObject(workspace_info, "icon", icon);
+          cJSON_AddItemToObject(workspace_info, "css_class", css);
+
+          cJSON_AddItemToArray(workspace_infos, workspace_info);
         }
       }
-      printf("]");
+
+      FILE *test = popen("/usr/bin/eww update show_workspaces=false", "r");
+      system("/usr/bin/eww update show_workspaces=false");
+      printf("%s\n", cJSON_PrintUnformatted(workspace_infos));
+      FILE *test1 = popen("/usr/bin/eww update show_workspaces=true", "r");
+      fflush(stdout);
+      cJSON_Delete(workspace_infos);
+
+      pclose(test1);
+      pclose(test);
     }
 
     // Empty buffer for new retrieval

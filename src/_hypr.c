@@ -76,7 +76,7 @@ void get_hypr_workspaces(workspaceTile* workspace_tiles,
   int active_workspace_id = get_number_by_key(active_workspace, "id");
   int num_of_workspaces = cJSON_GetArraySize(workspaces);
 
-  if (num_of_workspaces >= MAX_NUM_OF_WORKSPACES) {
+  if (num_of_workspaces > MAX_NUM_OF_WORKSPACES) {
     perror("found more workspaces, than supported.");
     exit(EXIT_FAILURE);
   }
@@ -94,11 +94,12 @@ void get_hypr_workspaces(workspaceTile* workspace_tiles,
     count_workspaces_per_monitor[monitor_id]++;
     workspace_tiles[i].index = workspace_id;
     workspace_tiles[i].monitor_id = monitor_id;
-    sprintf(workspace_tiles[i].css_class, "mon-%d", monitor_id);
     if (workspace_id == active_workspace_id) {
       strcpy(workspace_tiles[i].icon, "󰮯");
+      sprintf(workspace_tiles[i].css_class, "mon-%d-active", monitor_id);
     } else {
       strcpy(workspace_tiles[i].icon, "󰊠");
+      sprintf(workspace_tiles[i].css_class, "mon-%d", monitor_id);
     }
   }
   cJSON_Delete(workspaces);
