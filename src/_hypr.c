@@ -17,10 +17,9 @@ char* hypr_socket_path(char* socket_path, size_t socket_path_size) {
 // Takes in eventlines produced by Hypr Daemon and returns true if an event
 // associated to changing workspace is fired
 bool is_changing_workspace(char* eventline) {
-  return strncmp("movetoworkspace", eventline, strlen("movetoworkspace")) ==
-             0 ||
-         strncmp("workspace", eventline, strlen("workspace")) == 0 ||
-         strncmp("focusedmon", eventline, strlen("focusedmon")) == 0;
+  return strstr(eventline, "movetoworkspace>>") != NULL ||
+         strstr(eventline, "workspace>>") != NULL ||
+         strstr(eventline, "focusedmon>>") != NULL;
 }
 
 cJSON* get_hyprctl_output(char* command) {
@@ -49,14 +48,11 @@ cJSON* get_hypr_workspaces() {
       "map(map({ id, icon: \"\" }))|"      // [[],[]] => map(map())
       "map(map(select(.index != -99))) |"  // filter special workspace
       "map(sort_by(.index))'");
-  /* struct cJSON* active_workspaces = get_hyprctl_output( */
-  /*     "hyprctl monitors -j |" */
-  /*     "jq 'map(.activeWorkspace.id)'"); */
+
   int selected_workspace = get_hyprctl_output(
                                "hyprctl activeworkspace -j |"
                                "jq -c '.id'")
                                ->valueint;
-
   int num_of_monitors = cJSON_GetArraySize(workspaces_per_monitor);
 
   if (num_of_monitors > MAX_NUM_OF_MONITORS) {
@@ -71,8 +67,20 @@ cJSON* get_hypr_workspaces() {
       struct cJSON* workspace = cJSON_GetArrayItem(workspaces, j);
       struct cJSON* icon = cJSON_GetObjectItem(workspace, "icon");
       int workspace_id = cJSON_GetObjectItem(workspace, "id")->valueint;
+
+      char active_workspace_command[MAX_BUFFER_SIZE] = "";
+      snprintf(active_workspace_command, MAX_BUFFER_SIZE,
+               "hyprctl monitors -j |"
+               "jq -c 'map(.activeWorkspace.id) |"
+               "any(. == %d)'",
+               workspace_id);
+      int is_active_workspace =
+          get_hyprctl_output(active_workspace_command)->valueint;
+
       if (workspace_id == selected_workspace) {
         cJSON_SetValuestring(icon, "󰮯");
+      } else if (workspace_id != selected_workspace && is_active_workspace) {
+        cJSON_SetValuestring(icon, "");
       } else {
         cJSON_SetValuestring(icon, "󰊠");
       }
