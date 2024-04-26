@@ -22,7 +22,7 @@ bool is_changing_workspace(char* eventline) {
          strstr(eventline, "focusedmon>>") != NULL;
 }
 
-cJSON* get_hyprctl_output(char* command) {
+static cJSON* get_hyprctl_output(char* command) {
   FILE* output_file = popen(command, "r");
   char output_buffer[MAX_BUFFER_SIZE] = {};
 
@@ -45,9 +45,9 @@ cJSON* get_hypr_workspaces() {
   struct cJSON* workspaces_per_monitor = get_hyprctl_output(
       "hyprctl workspaces -j |"
       "jq 'group_by(.monitorID) |"
-      "map(map({ id, icon: \"\" }))|"      // [[],[]] => map(map())
-      "map(map(select(.index != -99))) |"  // filter special workspace
-      "map(sort_by(.index))'");
+      "map(map({ id, icon: \"\" }))|"   // [[],[]] => map(map())
+      "map(map(select(.id != -99))) |"  // filter special workspace
+      "map(sort_by(.id))'");
 
   int selected_workspace = get_hyprctl_output(
                                "hyprctl activeworkspace -j |"
