@@ -8,9 +8,10 @@
 
 // Create path to hypr socket
 char* hypr_socket_path(char* socket_path, size_t socket_path_size) {
+  char* xdg_folder = getenv("XDG_RUNTIME_DIR");
   char* hypr_signature = getenv("HYPRLAND_INSTANCE_SIGNATURE");
-  snprintf(socket_path, socket_path_size, "/tmp/hypr/%s/.socket2.sock",
-           hypr_signature);
+  snprintf(socket_path, socket_path_size, "%s/hypr/%s/.socket2.sock",
+           xdg_folder, hypr_signature);
   return socket_path;
 }
 
