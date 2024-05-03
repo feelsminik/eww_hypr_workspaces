@@ -22,6 +22,10 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
 	@mkdir -p $(BUILD_DIR)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
+deploy:
+	rm ~/dotfiles/script/workspacerd
+	cp ./workspacerd ~/dotfiles/script
+
 .PHONY: clean
 clean:
 	rm -rf $(BUILD_DIR)/*.o $(PROJ_NAME) $(BUILD_DIR)/$(PROJ_NAME)
