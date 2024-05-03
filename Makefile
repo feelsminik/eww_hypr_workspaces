@@ -4,8 +4,7 @@ SRC_DIR = ./src
 PROJ_NAME = workspacerd
 
 
-CFLAGS=-g                \
-	   -Wall             \
+CFLAGS=-Wall             \
 	   -Werror           \
 	   -std=c99          \
 	   -D_DEFAULT_SOURCE \
