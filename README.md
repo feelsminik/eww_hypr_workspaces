@@ -1,3 +1,6 @@
+C application to connect to Hyprland IPC, filtering and formatting it's output in `json` format for creating desktop widgets using `eww`. 
+Predecessor of [minikbar](https://www.github.com/feelsminik/minikbar)
+
 Dependencies:
 - [EWW wacky widgets](https://github.com/elkowar/eww)
 - [cJSON](https://github.com/DaveGamble/cJSON)
